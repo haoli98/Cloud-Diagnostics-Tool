@@ -1,5 +1,8 @@
 #vi /opt/scripts/system-info.sh
 #!/bin/bash
+#vi /opt/scripts/system-info.sh
+
+#!/bin/bash
 echo -e "-------------------------------System Information----------------------------"
 echo -e "Hostname:\t\t"`hostname`
 echo -e "uptime:\t\t\t"`uptime | awk '{print $3,$4}' | sed 's/,//'`
@@ -20,10 +23,9 @@ echo -e "Memory Usage:\t"`free | awk '/Mem/{printf("%.2f%"), $3/$2*100}'`
 echo -e "Swap Usage:\t"`free | awk '/Swap/{printf("%.2f%"), $3/$2*100}'`
 echo -e "CPU Usage:\t"`cat /proc/stat | awk '/cpu/{printf("%.2f%\n"), ($2+$4)*100/($2+$4+$5)}' |  awk '{print $0}' | head -1`
 echo ""
-echo -e "-------------------------------Disk Usage-------------------------------"
+echo -e "-------------------------------Disk Usage >80%-------------------------------"
 df -Ph | sed s/%//g | awk '{ if($5 > 0) print $0;}'
-df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
-echo ""
+ df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
 
 echo -e "-------------------------------For WWN Details-------------------------------"
 vserver=$(lscpu | grep Hypervisor | wc -l)
@@ -34,3 +36,23 @@ else
 cat /sys/class/fc_host/host?/port_name
 fi
 echo ""
+
+echo -e "-------------------------------Oracle DB Instances---------------------------"
+if id oracle >/dev/null 2>&1; then
+/bin/ps -ef|grep pmon
+then
+else
+echo "oracle user does not exist on $(hostname)"
+fi
+echo ""
+
+if (( $(cat /etc/*-release | grep -w "Oracle|Red Hat|CentOS|Fedora" | wc -l) > 0 ))
+then
+echo -e "-------------------------------Package Updates-------------------------------"
+yum updateinfo summary | grep 'Security|Bugfix|Enhancement'
+echo -e "-----------------------------------------------------------------------------"
+else
+echo -e "-------------------------------Package Updates-------------------------------"
+cat /var/lib/update-notifier/updates-available
+echo -e "-----------------------------------------------------------------------------"
+fi
