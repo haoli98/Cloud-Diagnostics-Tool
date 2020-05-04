@@ -79,8 +79,7 @@ class AzureSSHClient {
               while(in.available()>0){
                 int i=in.read(tmp, 0, 1024);
                 if(i<=0)break;
-                System.out.print(new String(tmp, 0, i));
-                System.out.println("/n");
+                System.out.println(new String(tmp, 0, i));
                 flag = false;
               }
         }
