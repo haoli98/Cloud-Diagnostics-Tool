@@ -16,7 +16,8 @@ public class Main {
 		
         AzureSSHClient client = new AzureSSHClient(user);
         
-        client.startSideCar();
+        client.getMetricsOnServer();
+//        client.startSideCar();
 //        client.startAzureSSHClient();
 	}
 }

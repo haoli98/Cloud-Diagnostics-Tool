@@ -8,6 +8,7 @@ import redis.clients.jedis.Jedis;
 
 import static java.util.Arrays.asList;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 class AzureSSHClient {
+	private static final String LOCAL_HOST = "127.0.0.1";
     private static final String HAO_HOST_1 = "40.121.57.154";
     private static final String HAO_HOST_2 = "40.121.233.18";
     private static final String FRANK_HOST = "13.92.44.67";
@@ -27,9 +29,14 @@ class AzureSSHClient {
     private static final String HAO_PRIVATE_KEY = "/Users/haoli/.ssh/id_rsa";
     private static final String FRANK_PRIVATE_KEY = "/Users/frankrodriguez/.ssh/id_rsa";
     
-    private static final String command1 = "free -m | awk \'NR==2{printf \"Memory Usage: %s/%sMB (%.2f%%)\", $3,$2,$3*100/$2 }\' ";
-    private static final String command2 = "df -h | awk \'$NF==\"/\"{printf \"Disk Usage: %d/%dGB (%s)\", $3,$2,$5}\'";
-    private static final String command3 = "awk -v a=\"$(awk \'/cpu /{print $2+$4,$2+$4+$5}\' /proc/stat; sleep 1)\" \'/cpu /{split(a,b,\" \"); print 100*($2+$4-b[1])/($2+$4+$5-b[2])}\'  /proc/stat";
+//    private static final String command1 = "free -m | awk \'NR==2{printf \"Memory Usage: %s/%sMB (%.2f%%)\", $3,$2,$3*100/$2 }\' ";
+//    private static final String command2 = "df -h | awk \'$NF==\"/\"{printf \"Disk Usage: %d/%dGB (%s)\", $3,$2,$5}\'";
+//    private static final String command3 = "awk -v a=\"$(awk \'/cpu /{print $2+$4,$2+$4+$5}\' /proc/stat; sleep 1)\" \'/cpu /{split(a,b,\" \"); print 100*($2+$4-b[1])/($2+$4+$5-b[2])}\'  /proc/stat";
+//    
+    
+    // Only work on Linux
+    private static final String command1 = "free -m | awk 'NR==2{printf \"Memory Usage: %s/%sMB (%.2f%%)\", $3,$2,$3*100/$2 }'";
+    private static final String command2 = "df -h | awk '$NF==\"/\"{printf \"Disk Usage: %d/%dGB (%s)\", $3,$2,$5}'";
     
     private List<String> servers;
     private List<String> commands;
@@ -50,14 +57,14 @@ class AzureSSHClient {
     		this.privateKey = FRANK_PRIVATE_KEY;
     	}
     	
-    	this.commands = Arrays.asList(command1, command2, command3);
+    	this.commands = Arrays.asList(command1, command2);
     }
     
     public void startSideCar() throws JSchException, IOException, InterruptedException {
     	Session session = setupSshSession(FRANK_HOST);
     	boolean flag = true;
     	session.connect();
-    	String c1 = "git clone https://github.com/haoli98/Cloud-Diagnostics-Tool.git; cd Cloud-Diagnostics-Tool; mkdir hello; ls";
+    	String c1 = "git clone https://github.com/haoli98/Cloud-Diagnostics-Tool.git; cd Cloud-Diagnostics-Tool; mkdir hello; ls; python -u test.py &";
     	
         Channel channel=session.openChannel("exec");
     	((ChannelExec)channel).setCommand(c1);
@@ -82,6 +89,27 @@ class AzureSSHClient {
         flag = true;
         channel.disconnect();
         session.disconnect();
+    }
+    
+    public void getMetricsOnServer() throws JSchException, IOException {
+    	// Assuming on server, get metrics
+        String s;
+        Process p;
+                
+        for (String command: this.commands) {
+            try {
+                p = Runtime.getRuntime().exec(command);
+                BufferedReader br = new BufferedReader(
+                    new InputStreamReader(p.getInputStream()));
+                
+                while ((s = br.readLine()) != null)
+                    System.out.println("line: " + s);
+                
+                p.waitFor();
+                System.out.println ("exit: " + p.exitValue());
+                p.destroy();
+            } catch (Exception e) {}
+        }
     }
     
     
@@ -131,6 +159,8 @@ class AzureSSHClient {
         session.disconnect();
 
     }
+    
+    
     private Session setupSshSession(String server) throws JSchException {
     	try {
             JSch jsch=new JSch();
