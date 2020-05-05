@@ -15,6 +15,8 @@ public class Main {
         String user = reader.readLine(); 		
 		
         AzureSSHClient client = new AzureSSHClient(user);
-        client.startAzureSSHClient();
+        
+        client.startSideCar();
+//        client.startAzureSSHClient();
 	}
 }
