@@ -1,5 +1,114 @@
-<label id="value_lable">
-    {% for suggestion in suggestions %}
-        {{ suggestion }}<br>
-    {% endfor %}
+<!-- <script type="text/javascript" src="/Users/jeffreyzhang/Desktop/Cloud-Diagnostics-Tool/azure-metrics-ui/app/templates/smoothie.js "></script> -->
+<script src="{{url_for('static', filename='smoothie.js')}}"></script>
+
+
+
+<canvas id="mycanvas" width="400" height="100"></canvas>
+<script>
+    var smoothie = new SmoothieChart();
+    // smoothie.streamTo(document.getElementById("mycanvas"));
+    // Data
+    var line1 = new TimeSeries();
+    var line2 = new TimeSeries();
+
+    // Add a random value to each line every second
+    setInterval(function() {
+    line1.append(new Date().getTime(), Math.random());
+    line2.append(new Date().getTime(), Math.random());
+    console.log("setInterval - Jeff");
+
+    }, 1000);
+
+    // Add to SmoothieChart
+    smoothie.addTimeSeries(line1);
+    smoothie.addTimeSeries(line2);
+
+    // smoothie.streamTo(document.getElementById("mycanvas"), 1000 /*delay*/); 
+    smoothie.streamTo(document.getElementById("mycanvas"));
+
+</script>
+
+
+
+<!-- <label id="value_lable">
+    <p> {{ memory_array }}</p>
+    <p> {{ disk_array }}</p>
+    <ol>
+        {% for data in suggestions %}
+            <li> {{ data }}<br> </li>
+        {% endfor %}
+    </ol>
 </label>
+
+<div id="chart" class="styles1"></div>
+<button id="toggle">Switch Styles</button>
+<script>
+    var memory_array_str = {{ memory_array|tojson }};
+    var disk_array_str = {{ disk_array|tojson }};
+
+    // var memory_array_Numbers = memory_array_str.map(Number);
+    // var disk_array_Numbers = disk_array_str.map(Number);
+    // memory_array_str.forEach(myFunction);
+    var memory_array_str = [];
+
+    length = memory_array_str.length
+    for(var i= 0; i< 4 ; i++){
+
+    // function myFunction(item, index) {
+    //     // element =  "{time: " + index + ", y: " + item +  "}, ";
+        
+        
+    //     memory_array_str.push(element)
+    //     // values: [ {time: 1370044800, y: 78}, {time: 1370044801, y: 98}, ... ]
+    // }
+
+    // // format the data
+
+    // var memory_array_JSONObject = JSON.parse(memory_array_str);
+    // var disk_array_JSONObject = JSON.parse(disk_array_str);
+    // console.log('jeff' + disk_array_JSONObject)
+
+
+    var chart = $('#chart').epoch({
+        type: 'time.area',
+        data: []
+    });
+
+  // The button swtiches the chart's class from styles1 to styles2 and back
+  $('#toggle').click(function (e) {
+    // This switches the class names...
+    var className = $('#chart').attr('class');
+    var newClassName = className === 'styles1' ? 'styles2' : 'styles1';
+    $('#chart').removeClass(className).addClass(newClassName);
+
+    // And this is required to see the updated styles...
+    chart.redraw();
+  });
+  
+  $('#my-chart').epoch({
+  type: 'time.line',
+  pixelRatio: 1
+})
+
+  var areaChartData = [
+  // The first layer
+    {
+        label: "Layer 1",
+        values: memory_array_str
+    },
+    // The second layer
+    {
+        label: "Layer 2",
+        values: memory_array_str
+    },
+];
+
+</script>
+
+<div id="areaChart" style="width: 800px; height: 200px"></div>
+<script>
+  $('#areaChart').epoch({
+    type: 'time.area',
+    data: areaChartData
+  });
+</script>  -->

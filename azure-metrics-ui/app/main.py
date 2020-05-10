@@ -26,6 +26,7 @@ def dashboard():
     return render_template('index.html', title='Dashboard')
 
 @app.route('/data')
+# gets new data and puts in message arr
 def data():
     print("in data")
     channel = session['channel']
@@ -34,9 +35,27 @@ def data():
         data = msg['data']
         messages.append(data)
         print(data)
-
     suggestions_list=["fuc"]
-    return render_template('data.html', suggestions=messages)
+    memory_usage_array = []
+    disk_usage_array = []
+
+    for x in messages:
+        string_x = str(x)
+        
+        if string_x.find("Memory") != -1:
+            start = string_x.find("(") + 1
+            end = string_x.find("%")
+            percent = string_x[start:end]
+            memory_usage_array.append(percent)
+        if string_x.find("Disk") != -1:
+            start = string_x.find("(") + 1
+            end = string_x.find("%")
+            percent = string_x[start:end]
+            disk_usage_array.append(percent)
+            # print ("HaoLiisabitch"  + str(percent) )
+    
+
+    return render_template('data.html', suggestions=messages, disk_array = disk_usage_array, memory_array = memory_usage_array )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

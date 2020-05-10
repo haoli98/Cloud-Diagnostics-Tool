@@ -21,6 +21,9 @@ Search: <input type="text" id="search_form_input"></input>
     type: 'get',
     success: function(data) {
       $("#place_for_suggestions").html(data);
+      // giving data to tag place_for_suggestions
+      // rendering data.html
+      // data refers to data.html in line 40 of main.py
     },
     complete: function() {
       // Schedule the next request when the current one's complete
@@ -32,4 +35,25 @@ Search: <input type="text" id="search_form_input"></input>
 
 </body>
 
+
+
+<script type="text/javascript" src="/Users/jeffreyzhang/Desktop/Cloud-Diagnostics-Tool/azure-metrics-ui/app/templates/smoothie.js "></script>
+<canvas id="mycanvas" width="400" height="100"></canvas>
+<script>
+    var smoothie = new SmoothieChart();
+    smoothie.streamTo(document.getElementById("mycanvas"));
+    // Data
+    var line1 = new TimeSeries();
+    var line2 = new TimeSeries();
+
+    // Add a random value to each line every second
+    setInterval(function() {
+    line1.append(new Date().getTime(), Math.random());
+    line2.append(new Date().getTime(), Math.random());
+    }, 1000);
+
+    // Add to SmoothieChart
+    smoothie.addTimeSeries(line1);
+    smoothie.addTimeSeries(line2);
+</script>
 </html>
