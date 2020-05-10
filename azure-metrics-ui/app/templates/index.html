@@ -37,7 +37,7 @@ Search: <input type="text" id="search_form_input"></input>
 
 
 
-<script type="text/javascript" src="/Users/jeffreyzhang/Desktop/Cloud-Diagnostics-Tool/azure-metrics-ui/app/templates/smoothie.js "></script>
+<script src="{{url_for('static', filename='smoothie.js')}}"></script>
 <canvas id="mycanvas" width="400" height="100"></canvas>
 <script>
     var smoothie = new SmoothieChart();

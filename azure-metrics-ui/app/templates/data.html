@@ -1,35 +1,3 @@
-<!-- <script type="text/javascript" src="/Users/jeffreyzhang/Desktop/Cloud-Diagnostics-Tool/azure-metrics-ui/app/templates/smoothie.js "></script> -->
-<script src="{{url_for('static', filename='smoothie.js')}}"></script>
-
-
-
-<canvas id="mycanvas" width="400" height="100"></canvas>
-<script>
-    var smoothie = new SmoothieChart();
-    // smoothie.streamTo(document.getElementById("mycanvas"));
-    // Data
-    var line1 = new TimeSeries();
-    var line2 = new TimeSeries();
-
-    // Add a random value to each line every second
-    setInterval(function() {
-    line1.append(new Date().getTime(), Math.random());
-    line2.append(new Date().getTime(), Math.random());
-    console.log("setInterval - Jeff");
-
-    }, 1000);
-
-    // Add to SmoothieChart
-    smoothie.addTimeSeries(line1);
-    smoothie.addTimeSeries(line2);
-
-    // smoothie.streamTo(document.getElementById("mycanvas"), 1000 /*delay*/); 
-    smoothie.streamTo(document.getElementById("mycanvas"));
-
-</script>
-
-
-
 <!-- <label id="value_lable">
     <p> {{ memory_array }}</p>
     <p> {{ disk_array }}</p>
