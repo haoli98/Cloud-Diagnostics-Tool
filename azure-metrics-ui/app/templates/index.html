@@ -6,6 +6,20 @@
     <title>Suggestions</title>
 </head>
 
+
+<script src="{{url_for('static', filename='smoothie.js')}}"></script>
+<canvas id="mycanvas" width="800" height="200"></canvas>
+<!-- 
+<label id="value_lable">
+  <p> {{ memory_array }}</p>
+  <p> {{ disk_array }}</p>
+  <ol>
+      {% for data in suggestions %}
+          <li> {{ data }}<br> </li>
+      {% endfor %}
+  </ol>
+</label> -->
+
 <body>
 
 Search: <input type="text" id="search_form_input"></input>
@@ -15,6 +29,18 @@ Search: <input type="text" id="search_form_input"></input>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
 <script>
+
+var global_data = "";
+
+var smoothie = new SmoothieChart({
+      grid: { strokeStyle:'rgb(125, 0, 0)', fillStyle:'rgb(60, 0, 0)',
+      lineWidth: 1, millisPerLine: 250, verticalSections: 6, },
+      labels: { fillStyle:'rgb(60, 0, 0)' }
+    });
+smoothie.streamTo(document.getElementById("mycanvas"));
+var line1 = new TimeSeries();
+var line2 = new TimeSeries();
+
 (function worker() {
   $.ajax({
     url: '/data',
@@ -24,36 +50,85 @@ Search: <input type="text" id="search_form_input"></input>
       // giving data to tag place_for_suggestions
       // rendering data.html
       // data refers to data.html in line 40 of main.py
-    },
+
+      console.log("data is " + data);
+      // global_data = data;
+      // console.log("global_data is " + data);
+      // console.log("d2 is " + d2);
+
+      var split = data.indexOf("%");
+      var mem = data.substring(13,split);
+
+      var disk_finder = data.indexOf("D");
+
+      // var other_half = data.substring(split + 1);
+      // var other_split = other_half.indexOf("%");
+
+      var disk = data.substring(disk_finder+11, disk_finder+13);
+
+      console.log("mem is " + mem);
+      console.log("disk is " + disk);
+
+
+      setInterval(function() {
+      line1.append(new Date().getTime(), mem);
+      line2.append(new Date().getTime(), disk);
+      }, 1000);
+      },
     complete: function() {
       // Schedule the next request when the current one's complete
       setTimeout(worker, 1000);
     }
   });
 })();
+smoothie.addTimeSeries(line1,
+    { strokeStyle:'rgb(0, 255, 0)', fillStyle:'rgba(0, 255, 0, 0.4)', lineWidth:2 });
+    smoothie.addTimeSeries(line2,
+    { strokeStyle:'rgb(255, 0, 255)', fillStyle:'rgba(255, 0, 255, 0.3)', lineWidth:2 });
+
+    smoothie.streamTo(document.getElementById("mycanvas"), 1000 /*delay*/); 
+
+
 </script>
 
-</body>
 
-
-
-<script src="{{url_for('static', filename='smoothie.js')}}"></script>
-<canvas id="mycanvas" width="400" height="100"></canvas>
 <script>
-    var smoothie = new SmoothieChart();
-    smoothie.streamTo(document.getElementById("mycanvas"));
+    // var smoothie = new SmoothieChart();
+
+    // var smoothie = new SmoothieChart({
+    //   grid: { strokeStyle:'rgb(125, 0, 0)', fillStyle:'rgb(60, 0, 0)',
+    //   lineWidth: 1, millisPerLine: 250, verticalSections: 6, },
+    //   labels: { fillStyle:'rgb(60, 0, 0)' }
+    // });
+
     // Data
-    var line1 = new TimeSeries();
-    var line2 = new TimeSeries();
+    // var line1 = new TimeSeries();
+    // var line2 = new TimeSeries();
 
     // Add a random value to each line every second
-    setInterval(function() {
-    line1.append(new Date().getTime(), Math.random());
-    line2.append(new Date().getTime(), Math.random());
-    }, 1000);
+    // setInterval(function() {
+    // line1.append(new Date().getTime(), Math.random());
+    // line2.append(new Date().getTime(), Math.random());
+    // }, 1000);
 
     // Add to SmoothieChart
-    smoothie.addTimeSeries(line1);
-    smoothie.addTimeSeries(line2);
+    // smoothie.addTimeSeries(line1);
+    // smoothie.addTimeSeries(line2);
+    // smoothie.addTimeSeries(line1,
+    // { strokeStyle:'rgb(0, 255, 0)', fillStyle:'rgba(0, 255, 0, 0.4)', lineWidth:3 });
+    // smoothie.addTimeSeries(line2,
+    // { strokeStyle:'rgb(255, 0, 255)', fillStyle:'rgba(255, 0, 255, 0.3)', lineWidth:3 });
+
+
+    // smoothie.streamTo(document.getElementById("mycanvas"), 1000 /*delay*/); 
+
+
 </script>
+
+
+
+
+</body>
 </html>
+
+

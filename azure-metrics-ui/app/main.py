@@ -31,6 +31,8 @@ def data():
     print("in data")
     channel = session['channel']
     msg = pubsub.get_message()
+    new_memory = 0
+    new_disk = 0
     if msg:
         data = msg['data']
         messages.append(data)
@@ -47,15 +49,20 @@ def data():
             end = string_x.find("%")
             percent = string_x[start:end]
             memory_usage_array.append(percent)
+            new_memory = percent
         if string_x.find("Disk") != -1:
             start = string_x.find("(") + 1
             end = string_x.find("%")
             percent = string_x[start:end]
             disk_usage_array.append(percent)
-            # print ("HaoLiisabitch"  + str(percent) )
+            new_disk = percent
     
+    memory_string = str(new_memory)
+    disk_string = str(new_disk)
 
-    return render_template('data.html', suggestions=messages, disk_array = disk_usage_array, memory_array = memory_usage_array )
+    # return render_template('index.html', suggestions=messages, disk_array = disk_usage_array, memory_array = memory_usage_array )
+    return  "Memory Usage: " + memory_string + "%\n | Disk Usage: " + disk_string + "%\n"
+    # return render_template('data.html', suggestions=messages, disk_array = disk_usage_array, memory_array = memory_usage_array )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
